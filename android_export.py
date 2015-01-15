@@ -3,7 +3,7 @@
 # ***** BEGIN APACHE LICENSE BLOCK *****
 #
 # Copyright 2013 Christian Becker <christian.becker.1987@gmail.com>
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -112,12 +112,13 @@ group = DensityGroup(parser, "Select which densities to export")
 # dpi obtained from http://developer.android.com/guide/practices/screens_support.html
 # 3:4:6:8 ratio see Table 1. Configuration qualifiers that allow you to provide special resources for different screen configurations.
 # and 1:1.5:2:3:4 ratios from developer.android.com/design/style/iconography.html
-group.add_density_option("ldpi", 120)
-group.add_density_option("mdpi", 160)
-group.add_density_option("hdpi", 240)
-group.add_density_option("xhdpi", 320)
-group.add_density_option("xxhdpi", 480)
-group.add_density_option("xxxhdpi", 640)
+inkscape_screen_dpi = 90
+group.add_density_option("ldpi", 0.75 * inkscape_screen_dpi)
+group.add_density_option("mdpi", 1.0 * inkscape_screen_dpi)
+group.add_density_option("hdpi", 1.5 * inkscape_screen_dpi)
+group.add_density_option("xhdpi", 2.0 * inkscape_screen_dpi)
+group.add_density_option("xxhdpi", 3.0 * inkscape_screen_dpi)
+group.add_density_option("xxxhdpi", 4.0 * inkscape_screen_dpi)
 parser.add_option_group(group)
 
 parser.add_option("--strip",  action="store",  type="boolstr", help="Use ImageMagick to reduce the image size")
