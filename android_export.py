@@ -21,6 +21,7 @@
 import optparse
 import sys
 import os
+import re
 import subprocess
 from copy import copy
 try:
@@ -41,16 +42,20 @@ def error(msg):
   sys.exit(1)
 
 def export(svg, options):
-  for qualifier, dpi in options.densities:
-    export_density(svg, options, qualifier, dpi)
+  for dpi_qualifier, dpi in options.densities:
+    export_density(svg, options, dpi_qualifier, dpi)
 
-def export_density(svg, options, qualifier, dpi):
-  dir = "%s/drawable-%s" % (options.resdir, qualifier)
+def export_density(svg, options, dpi_qualifier, dpi):
 
-  if not os.path.exists(dir):
-    os.makedirs(dir)
+  def export_resource(params, variants, name):
+    if variants:
+      dir = "%s/drawable-%s-%s" % (options.resdir, dpi_qualifier, variants)
+    else:
+      dir = "%s/drawable-%s" % (options.resdir, dpi_qualifier)
 
-  def export_resource(params, name):
+    if not os.path.exists(dir):
+      os.makedirs(dir)
+
     png = "%s/%s.png" % (dir, name)
 
     params2 = []
@@ -71,15 +76,23 @@ def export_density(svg, options, qualifier, dpi):
                               "optipng", "-quiet", "-o7", png
                             ], stdout=DEVNULL, stderr=subprocess.STDOUT)
 
+  def extract_res_variants(id):
+    m = re.match('^([^.]+)\.(.+)$', id)
+    return m.group(1) if m else ""
+
+  def extract_res_name(id):
+    m = re.match('^([^.]+)\.(.+)$', id)
+    return m.group(2) if m else id
+
   if options.source == '"selected_ids"':
     common = []
     if options.hideexceptselected:
-        common += ["--export-id-only"]
+      common += ["--export-id-only"]
 
     for id in options.ids:
-      export_resource(common + ["--export-id=%s" % id], id)
+      export_resource(common + ["--export-id=%s" % id], extract_res_variants(id), extract_res_name(id))
   else:
-    export_resource(["--export-area-page"], options.resname)
+    export_resource(["--export-area-page"], "", options.resname)
 
 def check_boolstr(option, opt, value):
   value = value.capitalize()

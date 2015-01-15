@@ -15,6 +15,11 @@ Usage
 * Select `Extensions -> Export -> Android Export…`
 * Customize the settings according to your needs
 
+Tips
+--------
+
+* If the object ID is `v21.appicon`, it will be exported as `drawable-*dpi-v21/appicon.png`
+
 License
 ========
 
