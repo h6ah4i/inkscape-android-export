@@ -50,17 +50,17 @@ def export_density(svg, options, qualifier, dpi):
   if not os.path.exists(dir):
     os.makedirs(dir)
 
-  def export_resource(param, name):
+  def export_resource(params, name):
     png = "%s/%s.png" % (dir, name)
 
-    subprocess.check_call([
-                            "inkscape",
-                            "--without-gui",
-                            param,
-                            "--export-dpi=%s" % dpi,
-                            "--export-png=%s" % png,
-                            svg
-                          ], stdout=DEVNULL, stderr=subprocess.STDOUT)
+    params2 = []
+    params2 += ["inkscape", "--without-gui"]
+    params2 += params
+    params2 += ["--export-dpi=%s" % dpi]
+    params2 += ["--export-png=%s" % png]
+    params2 += [svg]
+
+    subprocess.check_call(params2, stdout=DEVNULL, stderr=subprocess.STDOUT)
 
     if options.strip:
       subprocess.check_call([
@@ -72,10 +72,14 @@ def export_density(svg, options, qualifier, dpi):
                             ], stdout=DEVNULL, stderr=subprocess.STDOUT)
 
   if options.source == '"selected_ids"':
+    common = []
+    if options.hideexceptselected:
+        common += ["--export-id-only"]
+
     for id in options.ids:
-      export_resource("--export-id=%s" % id, id)
+      export_resource(common + ["--export-id=%s" % id], id)
   else:
-    export_resource("--export-area-page", options.resname)
+    export_resource(["--export-area-page"], options.resname)
 
 def check_boolstr(option, opt, value):
   value = value.capitalize()
@@ -123,6 +127,7 @@ parser.add_option_group(group)
 
 parser.add_option("--strip",  action="store",  type="boolstr", help="Use ImageMagick to reduce the image size")
 parser.add_option("--optimize",  action="store",  type="boolstr", help="Use OptiPNG to reduce the image size")
+parser.add_option("--hideexceptselected",  action="store",  type="boolstr", help="Hide all except selected")
 
 (options, args) = parser.parse_args()
 if len(args) != 1:
